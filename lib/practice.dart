@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(demo());
@@ -163,6 +166,28 @@ class _FormFillState extends State<FormFill> {
   TextEditingController numberEd = TextEditingController();
   TextEditingController multilineEd = TextEditingController();
 
+  File? pickedImage;
+
+  Future<void> pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        pickedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> pickImage1() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        pickedImage = File(pickedFile.path);
+      });
+    }
+  }
+
   String? selectedGender;
   bool agree = false;
   bool notification = false;
@@ -177,6 +202,38 @@ class _FormFillState extends State<FormFill> {
     );
   }
 
+  void openImageSourceDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return AlertDialog(
+          title: const Text("Select Image Source"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.image, color: Colors.red),
+                title: const Text("Gallery"),
+                onTap: () {
+                  Navigator.of(dialogCtx, rootNavigator: true).pop();
+                  pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Colors.blueAccent),
+                title: const Text("Camera"),
+                onTap: () {
+                  Navigator.of(dialogCtx, rootNavigator: true).pop();
+                  pickImage(ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -188,6 +245,127 @@ class _FormFillState extends State<FormFill> {
         scrollDirection: Axis.vertical,
         padding: EdgeInsets.all(20),
         children: [
+          GestureDetector(
+            onTap: pickImage1,
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.grey,
+              backgroundImage: pickedImage != null
+                  ? FileImage(pickedImage!)
+                  : null,
+              child: pickedImage == null
+                  ? Icon(Icons.camera_alt, size: 50, color: Colors.white)
+                  : null,
+            ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 20,
+            children: [
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      pickImage(ImageSource.camera);
+                    },
+                    icon: Icon(
+                      Icons.camera_alt,
+                      size: 40,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                  Text("CAMERA", style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      pickImage(ImageSource.gallery);
+                    },
+                    icon: Icon(
+                      Icons.photo,
+                      size: 40,
+                      color: const Color.fromARGB(255, 233, 65, 53),
+                    ),
+                  ),
+                  Text(
+                    "GELLERY",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          SizedBox(height: 40),
+          GestureDetector(
+            onTap: () {
+              pickImage(ImageSource.gallery);
+            },
+            child: Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.start,
+
+              children: [
+                Icon(Icons.photo, size: 30, color: Colors.amber),
+                Text("Pick From Gellery", style: TextStyle(fontSize: 20)),
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+          GestureDetector(
+            onTap: () {
+              pickImage(ImageSource.camera);
+            },
+            child: Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.camera_alt,
+                  size: 30,
+                  color: const Color.fromARGB(255, 211, 17, 17),
+                ),
+                Text("Take Picture", style: TextStyle(fontSize: 20)),
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+
+          ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.hovered)) {
+                  return Colors.orange; // on hover
+                }
+                return Colors.amber; // normal
+              }),
+              elevation: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.hovered)) {
+                  return 10;
+                }
+                return 2;
+              }),
+            ),
+
+            onPressed: () {
+              openImageSourceDialog();
+            },
+            child: Text(
+              "Select Picture",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          SizedBox(height: 20),
+
           //Name
           TextField(
             controller: nameEd,
