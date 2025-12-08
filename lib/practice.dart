@@ -418,7 +418,7 @@ class _FormFillState extends State<FormFill> {
           SizedBox(height: 20),
 
           DropdownButtonFormField<String>(
-            value: selectedGender,
+            initialValue: selectedGender,
             decoration: InputDecoration(
               labelText: "Gender",
               border: OutlineInputBorder(),

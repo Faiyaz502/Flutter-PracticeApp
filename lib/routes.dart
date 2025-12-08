@@ -1,9 +1,5 @@
-import 'dart:math';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:my_app/practice.dart';
 
@@ -243,7 +239,6 @@ class ECPage extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 return ProductCardWidget(product: products[index]);
-                ;
               },
             ),
           ],
@@ -269,7 +264,7 @@ class ProductCardModel {
 class ProductCardWidget extends StatelessWidget {
   final ProductCardModel product;
 
-  const ProductCardWidget({Key? key, required this.product}) : super(key: key);
+  const ProductCardWidget({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
